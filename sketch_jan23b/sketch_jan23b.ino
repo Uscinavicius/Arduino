@@ -1,10 +1,15 @@
+//Library impots
 #include <ESP8266WiFi.h>
+#include <ArduinoJson.h>
+#include <SPI.h>
 
-const char* ssid="Bone";
-const char* password = "123456789";
+//Wife server setup
+const char* ssid="mainframe";
+const char* password = "itisokay";
 WiFiServer server(80);
 
-int ledPin = 13;
+// ????
+int ledPin = LED_BUILTIN;
 
 //NeoPixel Setup
 #include <Adafruit_NeoPixel.h>
@@ -14,6 +19,7 @@ int ledPin = 13;
 #define PIN            12
 #define NUMPIXELS      1
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+//End of NeoPixel Setup
 
 void setup() {
   //Pin Setup
@@ -83,7 +89,7 @@ void loop() {
   String x = request.substring(request.indexOf("=") + 1);
   Serial.println(x);
   int y = x.toInt();
-  String j = 
+  //String j = 
   pixels.setPixelColor(0, pixels.Color(0,y,0)); // Moderately bright green color. 
   pixels.show();
   }
