@@ -16,7 +16,7 @@ ESP8266WebServer server(80);    // Create a webserver object that listens for HT
 const int led = 2;
 
 //Variable Setup
-String ssid = "bone";
+String ssid = "Bone";
 String password = "123456789";
 
 //Arduino Setup Loop _-_-_-_-
@@ -60,10 +60,7 @@ void setup(void){
   }
 
   server.on("/", HTTP_GET, handleRoot);        // Call the 'handleRoot' function when a client requests URI "/"
-  server.on("/json",HTTP_POST,handleJSON);
-  server.on("/rgb",HTTP_POST,handleRGB);
-  server.on("/color",HTTP_GET,handleColor);
-  server.on("/color",HTTP_POST,handleColorPost);
+  server.on("/", HTTP_POST, handleRoot); 
     
   server.onNotFound(handleNotFound);        // When a client requests an unknown URI (i.e. something other than "/"), call function "handleNotFound"
 
@@ -80,38 +77,17 @@ void loop(void){
 }
 
 void handleRoot() {                          // When URI / is requested, send a web page with a button to toggle the LED
-  server.send(200, "text/html", "<h1>RGB Led Server</h1>");
-}
+  String headder ="<h1>RGB Led Server 2</h1>\n";
+  String form1 = "<html><form action=\"/color\" method=\"POST\"><input type=\"text\" name=\"red\" placeholder=\"red\"><br><input type=\"submit\" value=\"submit\"></form>";
+  String button1 = "<form action=\"\" method=\"post\"><button style=\"height:200px;width:200px\" name=\"green\" value=\"Green\">Green</Button></form>";
+  String button2 = "<form action=\"\" method=\"post\"><button style=\"height:200px;width:200px\" name=\"blue\" value=\"Blue\">Blue</Button></form>";
+  server.send(200, "text/html", headder + form1 + button1 + button2 + "</html>");
+  Serial.println(server.arg("plain"));
 
-//void handleGetLED() {                         // When URI / is requested, send a web page with a button to toggle the LED
-//  server.send(200, "text/html", "<form action=\"/LED\" method=\"POST\"><input type=\"submit\" value=\"Toggle LED\"></form>");
-//}
-//
-//void handleLED() {                          // If a POST request is made to URI /LED
-//  digitalWrite(led,!digitalRead(led));      // Change the state of the LED
-//  server.sendHeader("Location","/");        // Add a header to respond with a new location for the browser to go to the home page again
-//  server.send(303);                         // Send it back to the browser with an HTTP status 303 (See Other) to redirect
-//}
+}
 
 void handleNotFound(){
   server.send(404, "text/plain", "404: Not found"); // Send HTTP status 404 (Not Found) when there's no handler for the URI in the request
-}
-
-//void handleLogin() {                         // If a POST request is made to URI /login
-//  if( ! server.hasArg("username") || ! server.hasArg("password") 
-//      || server.arg("username") == NULL || server.arg("password") == NULL) { // If the POST request doesn't have username and password data
-//    server.send(400, "text/plain", "400: Invalid Request");         // The request is invalid, so send HTTP status 400
-//    return;
-//  }
-//  if(server.arg("username") == "John Doe" && server.arg("password") == "password123") { // If both the username and the password are correct
-//    server.send(200, "text/html", "<h1>Welcome, " + server.arg("username") + "!</h1><p>Login successful</p>");
-//  } else {                                                                              // Username and password don't match
-//    server.send(401, "text/plain", "401: Unauthorized");
-//  }
-//}
-
-void handleColor(){
-  server.send(200,"text/html","<html><form action=\"/color\" method=\"POST\"><input type=\"text\" name=\"red\" placeholder=\"red\"><br><input type=\"text\" name=\"green\" placeholder=\"green\"><br><input type=\"text\" name=\"blue\" placeholder=\"blue\"><br><input type=\"submit\" value=\"submit\"></form></html>");
 }
 
 void handleColorPost(){
@@ -127,30 +103,6 @@ void handleColorPost(){
   }
   pixels.show();
   server.send(200,"text/html","<html><form action=\"/color\" method=\"POST\"><input type=\"text\" name=\"red\" placeholder=\"red\"><br><input type=\"text\" name=\"green\" placeholder=\"green\"><br><input type=\"text\" name=\"blue\" placeholder=\"blue\"><br><input type=\"submit\" value=\"submit\"></form></html>");
-}
-
-void handleJSON(){
-  Serial.println(server.arg("plain"));
-  String payload = server.arg("plain");
-  // Allocate JsonBuffer
-  // Use arduinojson.org/assistant to compute the capacity.
-  const size_t capacity = JSON_OBJECT_SIZE(3) + JSON_ARRAY_SIZE(2) + 60;
-  DynamicJsonBuffer jsonBuffer(capacity);
-  // Parse JSON object
-  JsonObject& root = jsonBuffer.parseObject(payload);
-  if (!root.success()) {
-    Serial.println(F("Parsing failed!"));
-    return;
-  }
-  
-  // Decode JSON/Extract values
-  Serial.println(F("Response:"));
-  Serial.println(root["sensor"].as<char*>());
-  Serial.println(root["time"].as<char*>());
-  Serial.println(root["data"][0].as<char*>());
-  Serial.println(root["data"][1].as<char*>());
-  
-  server.send(303);
 }
 
 void handleRGB(){
@@ -187,17 +139,17 @@ void handleRGB(){
   
 }
 
-//void handleTEMPLATE(){
-//  Serial.println(server.arg("plain"));
-//  String payload = server.arg("plain");
-//  const size_t capacity = JSON_OBJECT_SIZE(3) + JSON_ARRAY_SIZE(2) + 60;
-//  DynamicJsonBuffer jsonBuffer(capacity);
-//  JsonObject& root = jsonBuffer.parseObject(payload);
-//  if (!root.success()) {
-//    Serial.println(F("Parsing failed!"));
-//    return;
-//  }
-//}
+void handleTEMPLATE(){
+  Serial.println(server.arg("plain"));
+  String payload = server.arg("plain");
+  const size_t capacity = JSON_OBJECT_SIZE(3) + JSON_ARRAY_SIZE(2) + 60;
+  DynamicJsonBuffer jsonBuffer(capacity);
+  JsonObject& root = jsonBuffer.parseObject(payload);
+  if (!root.success()) {
+    Serial.println(F("Parsing failed!"));
+    return;
+  }
+}
 //EXAMPLE JSON FORMAT
 // Decode JSON/Extract values
 //  Serial.println(F("Response:"));
